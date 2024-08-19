@@ -1,15 +1,12 @@
 package ru.easycode.zerotoheroandroidtdd
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import org.w3c.dom.Text
-import java.io.Serializable
-import kotlin.properties.Delegates
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private var counter = 0
+    private var counter = Count.Base(0)
     lateinit var counterTextView: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,32 +14,27 @@ class MainActivity : AppCompatActivity() {
         counterTextView = findViewById<TextView>(R.id.countTextView)
         val incrementButton = findViewById<Button>(R.id.incrementButton)
         incrementButton.setOnClickListener {
-            counter += 2
-            counterTextView.text = counter.toString()
+            counter.increment("2")
         }
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(KEY, counter)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        counter = savedInstanceState.getInt(KEY)
-        counterTextView.text = counter.toString()
-
-    }
-    companion object{
-        val KEY = "storeKey"
     }
 }
-interface State: Serializable{
-    fun apply()
 
-    object Initial: State{
-        override fun apply() {
+interface Count{
+    fun increment(number: String): String
 
+
+    class Base(private val step: Int): Count {
+        init {
+            if(step < 1){
+                throw IllegalStateException("step should be positive, but was -2")
+            }
+        }
+        override fun increment(number: String): String {
+            val num = number.toInt()
+            val result = num + step
+            return result.toString()
         }
     }
 }
+
